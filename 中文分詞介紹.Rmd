@@ -44,23 +44,17 @@ library(text2vec)
 require(LSAfun)
 ```
 
+step1: 導入本文
+
 ```{r  target }
 content <- "紐約商業交易所（NYMEX）6月原油期貨5月6日收盤上漲0.31美元或0.5%成為每桶62.25美元，因伊朗的局勢升溫，歐洲ICE期貨交易所（ICE Futures Europe）近月布蘭特原油上漲0.39美元或0.6%成為每桶71.24美元。路透社報導，美國正在向中東部署一個航母打擊群和一個轟炸機特遣部隊，美國代理國防部長稱伊朗政權的威脅是可信的。 卡達半島電視台網站5月5日報導，美國本月起取消對8個經濟體（中國、印度、日本、韓國、台灣、土耳其、義大利和希臘）購買伊朗石油的豁免，相比去年11月美國對伊朗石油出口實施制裁的時候允許這些國家在6個月內繼續購買以避免過度影響油價，顯然美國認為如今油市已經有足夠的供應。美國國務卿蓬佩奧（Mike Pompeo）表示，美國已經與主要產油國家進行溝通，希望確保油市的供應充足；加上美國國內的產油也在持續增長，這令美國有信心油市的供應不會匱乏。 不過，實際局勢可能未必如美國所想。目前有多個產油國家內政動盪並影響產量，包括阿爾及利亞、安哥拉、利比亞、伊朗、奈及利亞與委內瑞拉，一旦動盪升級，隨時會進一步影響油市供應。此外，伊朗重質原油也並非任何國家都能替代，遑論美國的輕質原油，與伊朗原油在品質上最為相近的是沙烏地阿拉伯，其次為阿拉伯聯合大公國。而如果油價因為任何供應問題再度飆升至每桶100美元，估計將令全球經濟增長削減0.6個百分點，通膨則將上揚0.7個百分點。 油田服務公司貝克休斯（Baker Hughes Inc.）公佈，截至5月3日，美國石油與天然氣探勘井數量較前週減少1座至990座，創下去年3月（990座）以來的13個月新低。其中，主要用於頁岩油氣開採的水平探勘井數量較前週持平為873座。探勘活動的增減會反映未來的石油產量，貝克休斯統計的探勘井是指為開發以及探勘新油氣儲藏所設的鑽井（鑽機）數量。 貝克休斯的數據顯示，截至5月3日，美國石油探勘井數量較前週所創的逾一年新低增加2座至807座，累計今年來仍減少78座；天然氣探勘井數量較前週減少3座至183座。與去年同期相比，美國石油探勘井數量減少27座，天然氣探勘井數量減少13座；水平探勘井數量年減2座。根據美國能源部週度預測數據，截至4月26日當週，美國原油日均產量再創新高水平至1,230萬桶。 在美國最大產油州德州，油氣探勘井數量較前週減少7座至484座，緊鄰德州上方的奧克拉荷馬州油氣探勘井數量較前週增加1座至103座，新墨西哥州油氣探勘井數量較前週增加2座至106座，路易斯安那州油氣探勘井數量較前週持平為62座，北達科他州油氣探勘井數量較前週減少1座至57座。最大頁岩油產地、盤據西德州與新墨西哥州東南部的二疊紀盆地石油探勘井數量較前週減少1座至459座。"
 
 ```
+Step2: 去除英文和數字
 
 ```{r}
-genericSummary(content,k=1,language="chinese", breakdown=T)
-
-D <- "This is just a test document. It is set up just to throw some random 
-sentences in this example. So do not expect it to make much sense. Probably, even 
-the summary won't be very meaningful. But this is mainly due to the document not being
-meaningful at all. For test purposes, I will also include a sentence in this 
-example that is not at all related to the rest of the document. Lions are larger than cats."
-
-genericSummary(D,k=1)
+content <- str_remove_all(content, "[0-9a-zA-Z]+?")#超好用去掉數字和英文
 ```
-
 
 # 斷詞
 ```{r  }
@@ -70,11 +64,19 @@ cutter <- worker(bylines = F)
 #segment(content, cutter)
 word<- cutter[content]
 class(word)
+
+freq(word)
+
 ```
 
+Step3: 人工輸入要去除甚麼字眼
 
 ```{r}
-content <- str_remove_all(content, "[0-9a-zA-Z]+?")#超好用去掉數字和英文
+word_remove<- c("都")
+index<- which(word%in%word_remove) # tell you where is the word you want to remove
+index
+wordnew<- word[-index]
+wordnew
 ```
 
 
@@ -82,6 +84,12 @@ content <- str_remove_all(content, "[0-9a-zA-Z]+?")#超好用去掉數字和英�
 
 ```{r}
 stringr::str_split(content, regex("[，。]"))
+
+setence<- stringr::str_split(content, regex("[，。]"))
+
+setence <- as.data.frame(setence)# 常見的表格形式的儲存句子
+
+colnames(setence) <- "review"
 ```
 
 ```{r}
@@ -92,14 +100,14 @@ show_dictpath()# 讓使用者可以去自定義字典
 
 ```{r}
 en = "R is my favorite programming language."
-cn = "R语言是我最喜爱的编程语言"
-
+cn = "R語言是我最喜歡的編程語言，但是我並不喜歡python這種編程語言，"
 worker() -> wk
 segment(en,wk)
 segment(cn,wk)# 前面放句子後面放引擎
-
 word2<- cutter[cn]
 word2
+
+
 ```
 
 ```{r}
@@ -138,9 +146,26 @@ wt
 ```{r}
 # 計算詞彙頻率
 seg_words<- word2 
+seg_words
 txt_freq <- freq(seg_words)
 # 由大到小排列
 txt_freq <- arrange(txt_freq, desc(freq))
+txt_freq 
+```
+
+```{r}
+library(wordcloud)
+par(family=("Heiti TC Light"))
+wordcloud(
+  words = txt_freq$char, # 或segC_top50$Var1
+  freq =  txt_freq$freq, 
+  scale = c(4,.1), # 給定文字尺寸的區間（向量）
+  random.order = FALSE,# 關閉文字隨機顯示 按順序
+  ordered.colors = FALSE,#關閉配色順序
+  rot.per = FALSE,#關閉文字轉角度
+  min.freq = 7,# 定義最小freq數字 
+  colors = brewer.pal(8,"Dark2")
+)
 ```
 
 
@@ -151,5 +176,51 @@ txt_freq <- arrange(txt_freq, desc(freq))
 
 textrank_sentences(data = st,terminology = wt) %>% 
 summary(n = 2)
+
+```
+
+```{r}
+require(text2vec)
+data("movie_review")
+N = 1000
+it = itoken(movie_review$review[1:N], preprocess_function = tolower,
+             tokenizer = word_tokenizer)
+v = create_vocabulary(it)
+
+vectorizer = vocab_vectorizer(v)
+it = itoken(movie_review$review[1:N], preprocess_function = tolower,
+             tokenizer = word_tokenizer)
+dtm = create_dtm(it, vectorizer)
+dtm_tfidf = transformer_tfidf(dtm)
+```
+
+# create dtm
+
+```{r}
+n<- dim(setence)[1]
+setence$id <- seq(1:n)
+require(data.table)
+setDT(setence)
+set.seed(2016L)
+setkey(setence, id)
+all_ids = setence$id
+
+setence$review <- as.character(setence$review)
+```
+
+```{r}
+prep_fun = tolower
+tok_fun = word_tokenizer
+it_train = itoken(setence$review, 
+             preprocessor = prep_fun, 
+             tokenizer = tok_fun, 
+             ids = setence$id, 
+             progressbar = FALSE)
+vocab = create_vocabulary(it_train)
+
+vectorizer = vocab_vectorizer(vocab)
+dtm_train = create_dtm(it_train, vectorizer)
+dim(dtm_train)
+colnames(dtm_train)
 ```
 
