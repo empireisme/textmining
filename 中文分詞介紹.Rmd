@@ -19,9 +19,9 @@ knitr::opts_chunk$set(echo = TRUE)
 #目標
 這是一份筆記，希望可以記錄一些常見的中文預處理問題，包含斷詞等
 會有幾個目標
-1. 段詞
+1. 斷詞
 2. 詞彙頻率矩陣
-3. 詞姓標註
+3. 詞性標註
 4. 文字雲
 5. 去除雜質 利用正規表達式
 6. 自定義字典
@@ -191,7 +191,7 @@ vectorizer = vocab_vectorizer(v)
 it = itoken(movie_review$review[1:N], preprocess_function = tolower,
              tokenizer = word_tokenizer)
 dtm = create_dtm(it, vectorizer)
-dtm_tfidf = transformer_tfidf(dtm)
+
 ```
 
 # create dtm
@@ -201,7 +201,7 @@ n<- dim(setence)[1]
 setence$id <- seq(1:n)
 require(data.table)
 setDT(setence)
-set.seed(2016L)
+#set.seed(2016L)
 setkey(setence, id)
 all_ids = setence$id
 
@@ -221,6 +221,11 @@ vocab = create_vocabulary(it_train)
 vectorizer = vocab_vectorizer(vocab)
 dtm_train = create_dtm(it_train, vectorizer)
 dim(dtm_train)
-colnames(dtm_train)
+#colnames(dtm_train)
+```
+
+
+```{r}
+
 ```
 
