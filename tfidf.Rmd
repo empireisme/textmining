@@ -77,6 +77,7 @@ index<- which(word%in%word_remove) # tell you where is the word you want to remo
 index
 wordnew<- word[-index]
 wordnew
+
 ```
 
 
@@ -95,17 +96,19 @@ colnames(setence) <- "review"
 ```{r}
 show_dictpath()# 讓使用者可以去自定義字典
 #来到这个路径下，然后对“user.dict.utf8”这个文件进行更改。使用记事本打开，然后在最后补上词条，也就是“R语言” 
+
+editDict()
 ```
 
 
 ```{r}
 en = "R is my favorite programming language."
-cn = "R語言是我最喜歡的編程語言，但是我並不喜歡python這種編程語言，菜豆蛇潛蠅非洲菊斑潛蠅"
+cn = "R語言是我最喜歡的編程語言，但是我並不喜歡python這種編程語言，"
 worker() -> wk
 segment(en,wk)
 segment(cn,wk)# 前面放句子後面放引擎
-#word2<- cutter[cn]
-#word2
+word2<- cutter[cn]
+word2
 
 
 ```
@@ -230,5 +233,15 @@ dim(dtm_train)
 tfidf = TfIdf$new()  
 
 tm_train_tfidf = fit_transform(dtm_train, tfidf)
+
+colnames(tm_train_tfidf)
+
+dim(tm_train_tfidf)
+EditDict()
+```
+
+
+```{r}
+
 ```
 
